@@ -28,6 +28,56 @@ class _FormBuilderScreenState extends State<FormBuilderScreen> {
 
 
 
+  // Preview builder based on type
+  Widget buildPreview(Map<String, dynamic> q) {
+    switch (q["type"]) {
+      case "short":
+        return const TextField(
+          decoration: InputDecoration(hintText: "Short answer"),
+        );
+
+      case "long":
+        return const TextField(
+          maxLines: 3,
+          decoration: InputDecoration(hintText: "Long answer"),
+        );
+
+      case "number":
+        return const TextField(
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(hintText: "Numeric answer"),
+        );
+
+      case "single":
+        return Column(
+          children: q["options"].map<Widget>((o) {
+            return RadioListTile(
+              value: o,
+              groupValue: null,
+              onChanged: null,
+              title: Text(o),
+            );
+          }).toList(),
+        );
+
+      case "multiple":
+        return Column(
+          children: q["options"].map<Widget>((o) {
+            return CheckboxListTile(
+              value: false,
+              onChanged: null,
+              title: Text(o),
+            );
+          }).toList(),
+        );
+
+      default:
+        return const SizedBox();
+    }
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -102,9 +152,69 @@ class _FormBuilderScreenState extends State<FormBuilderScreen> {
                           onChanged: (value) {
                             setState(() {
                               q["type"] = value;
+                              if (value == "single" || value == "multiple") {
+                                if (q["options"].isEmpty) {
+                                  q["options"].add("Option 1");
+                                }
+                              }
                             });
                           },
                         ),
+
+                        const SizedBox(height: 10),
+
+                        // Option editor
+                        if (q["type"] == "single" || q["type"] == "multiple")
+                          Column(
+                            children: [
+
+                              ...q["options"].asMap().entries.map<Widget>((opt) {
+                                int optIndex = opt.key;
+                                String optionText = opt.value;
+
+                                return Row(
+                                  children: [
+                                    Expanded(
+                                      child: TextField(
+                                        controller: TextEditingController(text: optionText),
+                                        onChanged: (val) {
+                                          q["options"][optIndex] = val;
+                                        },
+                                        decoration: const InputDecoration(
+                                          hintText: "Option",
+                                        ),
+                                      ),
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.close),
+                                      onPressed: () {
+                                        setState(() {
+                                          q["options"].removeAt(optIndex);
+                                        });
+                                      },
+                                    )
+                                  ],
+                                );
+                              }),
+
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: TextButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      q["options"].add("New Option");
+                                    });
+                                  },
+                                  child: const Text("+ Add Option"),
+                                ),
+                              )
+                            ],
+                          ),
+
+                        const SizedBox(height: 10),
+
+                        // Preview
+                        buildPreview(q),
 
                         const SizedBox(height: 10),
 
