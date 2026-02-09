@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "540639980844",
+    "project_id": "form-builder-yuvraj",
+    "storage_bucket": "form-builder-yuvraj.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:540639980844:android:c5da5ca88c4be8b5d39089",
+        "android_client_info": {
+          "package_name": "com.example.form_builder_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQj1ptIQLAj7KMv-R2cOaY_T7Nmj-qWqo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
