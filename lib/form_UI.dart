@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 
 class FormBuilderScreen extends StatefulWidget {
   const FormBuilderScreen({super.key});
@@ -9,12 +12,27 @@ class FormBuilderScreen extends StatefulWidget {
 
 class _FormBuilderScreenState extends State<FormBuilderScreen> {
 
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   final titleController = TextEditingController();
   final descController = TextEditingController();
 
+  Future<void> saveForm() async {
+
+  await _firestore.collection("forms").add({
+    "title": titleController.text.trim(),
+    "description": descController.text.trim(),
+    "createdAt": FieldValue.serverTimestamp(),
+    "questions": questions,
+  });
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(content: Text("Form Saved")),
+  );
+}
+
+
   List<Map<String, dynamic>> questions = [];
-
-
 
   void addQuestion() {
     setState(() {
@@ -250,7 +268,7 @@ class _FormBuilderScreenState extends State<FormBuilderScreen> {
               // Save
               ElevatedButton(
                 onPressed: () {
-                  print(questions);
+                  saveForm();
                 },
                 child: const Text("Save Form"),
               ),
