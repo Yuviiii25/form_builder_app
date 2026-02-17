@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'form_fill_screen.dart';
 
 
 class FormBuilderScreen extends StatefulWidget {
@@ -13,23 +13,50 @@ class FormBuilderScreen extends StatefulWidget {
 class _FormBuilderScreenState extends State<FormBuilderScreen> {
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
   final titleController = TextEditingController();
   final descController = TextEditingController();
 
   Future<void> saveForm() async {
 
-  await _firestore.collection("forms").add({
-    "title": titleController.text.trim(),
-    "description": descController.text.trim(),
-    "createdAt": FieldValue.serverTimestamp(),
-    "questions": questions,
-  });
+    final docRef = await _firestore.collection("forms").add({
+      "title": titleController.text.trim(),
+      "description": descController.text.trim(),
+      "createdAt": FieldValue.serverTimestamp(),
+      "questions": questions,
+    });
 
-  ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(content: Text("Form Saved")),
-  );
-}
+    final formId = docRef.id;
+
+    final link = "${Uri.base.origin}/#/form/$formId";
+
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("Form Created"),
+        content: SelectableText(link),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text("Close"),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => FormFillScreen(formId: formId),
+                ),
+              );
+            },
+            child: const Text("Open Form"),
+          ),
+        ],
+      ),
+    );
+  }
 
 
   List<Map<String, dynamic>> questions = [];
